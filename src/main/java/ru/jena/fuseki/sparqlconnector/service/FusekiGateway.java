@@ -1,6 +1,8 @@
 package ru.jena.fuseki.sparqlconnector.service;
 
+import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
+import ru.jena.fuseki.sparqlconnector.dto.FusekiQueryResult;
 
 import java.io.File;
 
@@ -11,5 +13,5 @@ public interface FusekiGateway {
 
     Model get(String dataset);
 
-    void query(String dataset, String query);
+    FusekiQueryResult query(String dataset, Query query);
 }

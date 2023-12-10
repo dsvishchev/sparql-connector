@@ -1,6 +1,9 @@
 package ru.jena.fuseki.sparqlconnector.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.jena.fuseki.sparqlconnector.properties.FusekiProperties;
@@ -8,9 +11,12 @@ import ru.jena.fuseki.sparqlconnector.service.impl.FusekiGatewayImpl;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FusekiGatewayImplTest {
-    private static final FusekiGateway FUSEKI_GATEWAY = new FusekiGatewayImpl(FusekiProperties.LOCAL);
+    private static final FusekiGateway FUSEKI_GATEWAY = new FusekiGatewayImpl(FusekiProperties.LOCAL, new ObjectMapper());
     private static final String RESOURCE = "book-dataset.rdf";
     private static final String DATASET = "ds";
 
@@ -52,11 +58,27 @@ class FusekiGatewayImplTest {
         var file = new File(Objects.requireNonNull(classLoader.getResource(RESOURCE)).getFile());
         var expected = FUSEKI_GATEWAY.read(file);
         FUSEKI_GATEWAY.upload(DATASET, expected);
+        var query = new SelectBuilder()
+                .addVar("*")
+                .addWhere("?s", "?p", "?o")
+                .build();
 
         //when:
-        FUSEKI_GATEWAY.query(DATASET, "SELECT * {?s ?p ?o}");
+        var result = FUSEKI_GATEWAY.query(DATASET, query);
 
         //then:
-        System.out.println("success");
+        Assertions.assertEquals(Set.of("s", "p", "o"), result.getHead().getVars());
+        Assertions.assertEquals(4, result.getResults().getBindings().size());
+        assertThat(result.getHead().getVars())
+                .hasSize(3)
+                .areExactly(1, varCondition("s"))
+                .areExactly(1, varCondition("p"))
+                .areExactly(1, varCondition("o"));
+        assertThat(result.getResults().getBindings())
+                .hasSize(4);
+    }
+
+    private Condition<String> varCondition(String expected) {
+        return new Condition<>(expected::equals, "var condition");
     }
 }

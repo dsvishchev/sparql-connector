@@ -1,18 +1,22 @@
 package ru.jena.fuseki.sparqlconnector.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.DatasetAccessorFactory;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.springframework.stereotype.Service;
+import ru.jena.fuseki.sparqlconnector.dto.FusekiQueryResult;
 import ru.jena.fuseki.sparqlconnector.properties.FusekiProperties;
 import ru.jena.fuseki.sparqlconnector.service.FusekiGateway;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -24,6 +28,7 @@ public class FusekiGatewayImpl implements FusekiGateway {
     private static final String SLASH = "/";
 
     private final FusekiProperties fusekiProperties;
+    private final ObjectMapper mapper;
 
     @Override
     public void upload(String dataset, Model model) {
@@ -50,19 +55,18 @@ public class FusekiGatewayImpl implements FusekiGateway {
                 .getModel();
     }
 
+    @SneakyThrows
     @Override
-    public void query(String dataset, String query) {
+    public FusekiQueryResult query(String dataset, Query query) {
         var service = fusekiProperties.getUrl() + SLASH + dataset;
+        FusekiQueryResult result;
         try (var execution = QueryExecutionFactory.sparqlService(service, query)) {
             var results = execution.execSelect();
-            ResultSetFormatter.out(System.out, results);
-            while (results.hasNext()) {
-                var solution = results.nextSolution();
-                System.out.println(solution);
+            try (var bos = new ByteArrayOutputStream()) {
+                ResultSetFormatter.outputAsJSON(bos, results);
+                result = mapper.readValue(bos.toByteArray(), FusekiQueryResult.class);
             }
         }
-        // TODO: посмотреть в сторону https://jena.apache.org/documentation/extras/querybuilder/
-        // https://jena.apache.org/documentation/query/app_api.html
-        // https://jena.apache.org/documentation/query/manipulating_sparql_using_arq.html
+        return result;
     }
 }
