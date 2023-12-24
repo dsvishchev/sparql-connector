@@ -1,4 +1,4 @@
-package ru.jena.fuseki.sparqlconnector.service.impl;
+package ru.jena.fuseki.sparqlconnector.gateway.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,21 +11,19 @@ import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.springframework.stereotype.Service;
-import ru.jena.fuseki.sparqlconnector.dto.FusekiQueryResult;
+import ru.jena.fuseki.sparqlconnector.model.FusekiQueryResult;
 import ru.jena.fuseki.sparqlconnector.properties.FusekiProperties;
-import ru.jena.fuseki.sparqlconnector.service.FusekiGateway;
+import ru.jena.fuseki.sparqlconnector.gateway.FusekiGateway;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
+
+import static ru.jena.fuseki.sparqlconnector.utils.FusekiUtils.RDF_XML;
+import static ru.jena.fuseki.sparqlconnector.utils.FusekiUtils.SLASH;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FusekiGatewayImpl implements FusekiGateway {
-    private static final String RDF_XML = "RDF/XML";
-    private static final String SLASH = "/";
 
     private final FusekiProperties fusekiProperties;
     private final ObjectMapper mapper;
@@ -49,7 +47,17 @@ public class FusekiGatewayImpl implements FusekiGateway {
 
     @SneakyThrows
     @Override
-    public Model get(String dataset) {
+    public Model read(byte[] bytes) {
+        var model = ModelFactory.createDefaultModel();
+        try (var in = new BufferedInputStream(new ByteArrayInputStream(bytes))) {
+            model.read(in, null, RDF_XML);
+        }
+        return model;
+    }
+
+    @SneakyThrows
+    @Override
+    public Model getModel(String dataset) {
         return DatasetAccessorFactory
                 .createHTTP(fusekiProperties.getUrl() + SLASH + dataset)
                 .getModel();

@@ -1,7 +1,8 @@
-package ru.jena.fuseki.sparqlconnector.dto;
+package ru.jena.fuseki.sparqlconnector.model;
 
 /**
  * Marking interface for query
  */
 public interface FusekiQuery {
+    String getType();
 }

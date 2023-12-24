@@ -1,4 +1,4 @@
-package ru.jena.fuseki.sparqlconnector.dto;
+package ru.jena.fuseki.sparqlconnector.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

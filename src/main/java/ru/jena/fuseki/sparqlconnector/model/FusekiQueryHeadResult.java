@@ -1,11 +1,11 @@
-package ru.jena.fuseki.sparqlconnector.dto;
+package ru.jena.fuseki.sparqlconnector.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,5 +15,5 @@ public class FusekiQueryHeadResult {
     public static final FusekiQueryHeadResult DEFAULT = FusekiQueryHeadResult.builder().build();
 
     @Builder.Default
-    private Set<String> vars = Set.of();
+    private List<String> vars = List.of();
 }

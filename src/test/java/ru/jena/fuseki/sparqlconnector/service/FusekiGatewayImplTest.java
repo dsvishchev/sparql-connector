@@ -6,8 +6,9 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.jena.fuseki.sparqlconnector.gateway.FusekiGateway;
 import ru.jena.fuseki.sparqlconnector.properties.FusekiProperties;
-import ru.jena.fuseki.sparqlconnector.service.impl.FusekiGatewayImpl;
+import ru.jena.fuseki.sparqlconnector.gateway.impl.FusekiGatewayImpl;
 
 import java.io.File;
 import java.util.Objects;
@@ -41,7 +42,7 @@ class FusekiGatewayImplTest {
         FUSEKI_GATEWAY.upload(DATASET, expected);
 
         //when:
-        var actual = FUSEKI_GATEWAY.get(DATASET);
+        var actual = FUSEKI_GATEWAY.getModel(DATASET);
 
         //then:
         Assertions.assertEquals(expected.getGraph().toString(), actual.getGraph().toString());

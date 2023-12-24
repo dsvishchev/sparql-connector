@@ -1,4 +1,4 @@
-package ru.jena.fuseki.sparqlconnector.dto;
+package ru.jena.fuseki.sparqlconnector.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Set;
+
+import static ru.jena.fuseki.sparqlconnector.constants.QueryTypeConstants.SELECT;
 
 @Data
 @NoArgsConstructor
@@ -25,4 +27,9 @@ public class SelectFusekiQuery implements FusekiQuery {
     @NotEmpty
     @Builder.Default
     private Set<String> variables = Set.of();
+
+    @Override
+    public String getType() {
+        return SELECT;
+    }
 }
