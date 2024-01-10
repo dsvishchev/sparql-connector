@@ -1,0 +1,14 @@
+ru:
+  jena:
+    fuseki:
+      url: ${JENA_FUSEKI_URL:http://localhost:3030}
+server:
+  port: 9898
+  servlet:
+    context-path: /connector
+springdoc:
+  show-actuator: true
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
