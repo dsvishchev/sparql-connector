@@ -1,0 +1,10 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <rdf:Description rdf:about="http://www.w3.org/">
+    <dc:title>About fisherman and fish</dc:title>
+    <dc:title>Childhood</dc:title>
+    <dc:creator>Lev Tolstoy</dc:creator>
+    <dc:creator>Alex Pushkin</dc:creator>
+  </rdf:Description>
+</rdf:RDF>
