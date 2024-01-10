@@ -11,6 +11,7 @@ import ru.jena.fuseki.sparqlconnector.properties.FusekiProperties;
 import ru.jena.fuseki.sparqlconnector.gateway.impl.FusekiGatewayImpl;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -68,7 +69,7 @@ class FusekiGatewayImplTest {
         var result = FUSEKI_GATEWAY.query(DATASET, query);
 
         //then:
-        Assertions.assertEquals(Set.of("s", "p", "o"), result.getHead().getVars());
+        Assertions.assertEquals(List.of("s", "p", "o"), result.getHead().getVars());
         Assertions.assertEquals(4, result.getResults().getBindings().size());
         assertThat(result.getHead().getVars())
                 .hasSize(3)
